@@ -36,6 +36,8 @@ dependencies {
     shadow("dev.kord.x:emoji:0.5.0")
 
     implementation("io.netty:netty-all:4.1.79.Final")
+    implementation("com.twelvemonkeys.imageio:imageio-core:3.9.4")
+    implementation("com.twelvemonkeys.imageio:imageio-webp:3.9.4")
 }
 
 loom {

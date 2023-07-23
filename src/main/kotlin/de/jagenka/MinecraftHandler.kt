@@ -1,7 +1,9 @@
 package de.jagenka
 
 import de.jagenka.Util.unwrap
+import dev.kord.common.entity.Snowflake
 import dev.kord.core.event.message.MessageCreateEvent
+import dev.kord.x.emoji.Emojis
 import kotlinx.coroutines.launch
 import net.fabricmc.fabric.api.message.v1.ServerMessageEvents
 import net.minecraft.server.MinecraftServer
@@ -53,7 +55,7 @@ object MinecraftHandler
     {
         Main.scope.launch {
             DiscordHandler.sendCodeBlock(
-                "ansi", "<\u001B[1;2m${sender.name.string}\u001B[0m> ${message.string}"
+                "ansi", "<\u001B[1;2m${sender.name.string}\u001B[0m> ${message.string.convertEmojisFromMC()}"
             )
         }
     }
@@ -99,7 +101,9 @@ object MinecraftHandler
 
     suspend fun sendMessage(event: MessageCreateEvent)
     {
-
+        ASCIIArtConverter.convertEmojiToASCII(event, 0.5)?.let { ascii ->
+            DiscordHandler.sendCodeBlock("", ascii)
+        }
         var text = event.message.referencedMessage?.getAuthorAsMemberOrNull()?.let {
             "@${it.effectiveName} "
         } ?: ""
@@ -176,5 +180,11 @@ object MinecraftHandler
     fun ServerPlayerEntity.sendPrivateMessage(text: String)
     {
         this.sendMessage(Text.of(text))
+    }
+
+    fun String.convertEmojisFromMC(): String
+    {
+        val re = Regex("<3")
+        return re.replace(this, Emojis.heart.unicode)
     }
 }
